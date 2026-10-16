@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  color: #222222;
+  background-color: #f7f7f9;
+  line-height: 1.6;
+}
+
+header {
+  padding: 24px 16px;
+  text-align: center;
+  color: #ffffff;
+  background-color: #2f4f8f;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+}
+
+header p {
+  margin: 4px 0;
+}
+
+header a {
+  color: #ffe08a;
+  font-weight: bold;
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+}
+
+h2 {
+  margin-top: 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #2f4f8f;
+  font-size: 22px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+caption {
+  margin-bottom: 8px;
+  text-align: left;
+  color: #555555;
+}
+
+th,
+td {
+  padding: 8px 12px;
+  border: 1px solid #dddddd;
+  text-align: left;
+}
+
+th {
+  color: #ffffff;
+  background-color: #2f4f8f;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+.weeks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.weeks li {
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+.weeks .done {
+  background-color: #d8f0dc;
+  border: 1px solid #2e8b45;
+}
+
+.weeks .done a {
+  color: #1d6b32;
+  font-weight: bold;
+}
+
+.weeks .planned {
+  color: #777777;
+  background-color: #e8e8e8;
+  border: 1px solid #bbbbbb;
+}
+
+footer {
+  padding: 16px;
+  text-align: center;
+  color: #ffffff;
+  background-color: #2f4f8f;
+}
+
+footer p {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 24px;
+  }
+
+  th,
+  td {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+}
