@@ -1,7 +1,64 @@
 // 달빛카페 화면 스크립트 (메뉴 데이터는 menu.js의 MENU 사용)
 
-// 테이블 번호는 지금은 임시 문구입니다. 나중에 실제 값으로 바꿔 주세요.
-const TABLE_LABEL = "테이블 번호 (임시)";
+/* ───────── 테이블 번호 ─────────
+   주소 뒤에 ?table=3 처럼 붙여서 접속하면 "3번 테이블"로 표시합니다.
+   테이블마다 이 주소의 QR 코드를 붙여 두면 손님이 번호를 입력하지 않아도 됩니다.
+   번호가 없으면 임시 문구를 보여줍니다. */
+const PLACEHOLDER_TABLE = "테이블 번호 (임시)";
+const MAX_QTY = 20; // 메뉴 하나당 담을 수 있는 최대 수량
+
+// 저장소를 쓸 수 없는 환경(비공개 모드, 저장소 차단 등)에서도 오류 없이 동작하게 감쌉니다.
+// kind: "session"(이번 방문 동안만) 또는 "local"(브라우저를 닫아도 유지)
+function storageGet(kind, key) {
+  try {
+    const store = kind === "session" ? window.sessionStorage : window.localStorage;
+    return store.getItem(key);
+  } catch (e) {
+    return null;
+  }
+}
+
+function storageSet(kind, key, value) {
+  try {
+    const store = kind === "session" ? window.sessionStorage : window.localStorage;
+    store.setItem(key, value);
+  } catch (e) {
+    // 저장이 안 되어도 주문 화면은 그대로 동작합니다.
+  }
+}
+
+function storageRemove(kind, key) {
+  try {
+    const store = kind === "session" ? window.sessionStorage : window.localStorage;
+    store.removeItem(key);
+  } catch (e) {
+    // 무시
+  }
+}
+
+// 허용하는 번호: 숫자 1~3자리, 또는 영문·숫자·한글·하이픈 8자 이내
+function validTable(value) {
+  return typeof value === "string" && /^[0-9A-Za-z가-힣-]{1,8}$/.test(value);
+}
+
+function resolveTable() {
+  let table = new URLSearchParams(location.search).get("table");
+  if (validTable(table)) {
+    storageSet("session", "moonlight-table", table);
+  } else {
+    // 주소에 번호가 없으면(새로고침 등) 이번 방문에서 쓰던 번호를 이어서 씁니다.
+    table = storageGet("session", "moonlight-table");
+  }
+  return validTable(table) ? table : null;
+}
+
+const TABLE_ID = resolveTable();
+const TABLE_LABEL = TABLE_ID === null
+  ? PLACEHOLDER_TABLE
+  : /^\d{1,3}$/.test(TABLE_ID) ? Number(TABLE_ID) + "번 테이블" : TABLE_ID + " 테이블";
+
+// 장바구니는 테이블별로 따로 저장합니다.
+const CART_KEY = "moonlight-cart:" + (TABLE_ID === null ? "none" : TABLE_ID);
 
 const menuEl = document.getElementById("menu");
 const tabEls = document.querySelectorAll(".tab");
@@ -154,7 +211,9 @@ tabEls.forEach(function (tab) {
 function addToCart(id, item) {
   const line = cart.get(id);
   if (line) {
-    line.qty += 1;
+    if (line.qty < MAX_QTY) {
+      line.qty += 1;
+    }
   } else {
     cart.set(id, { name: item.name, price: item.price, qty: 1 });
   }
@@ -164,6 +223,9 @@ function addToCart(id, item) {
 function changeQty(id, delta) {
   const line = cart.get(id);
   if (!line) {
+    return;
+  }
+  if (delta > 0 && line.qty >= MAX_QTY) {
     return;
   }
   line.qty += delta;
@@ -183,6 +245,68 @@ function updateCartBar() {
   cartBar.hidden = totals.count === 0;
   cartCountEl.textContent = totals.count;
   cartTotalEl.textContent = formatPrice(totals.total);
+  saveCart();
+}
+
+/* ───────── 장바구니 저장·복원 ─────────
+   새로고침해도 담은 메뉴가 남도록 브라우저에 저장합니다.
+   저장하는 것은 메뉴 id와 수량뿐이고, 이름과 가격은 불러올 때 menu.js에서 다시 가져옵니다.
+   (메뉴 가격이 바뀌었거나 품절·삭제된 메뉴가 장바구니에 남는 일을 막기 위해서입니다.) */
+function findMenuItem(id) {
+  const parts = id.split(":");
+  const type = parts[0];
+  const name = parts.slice(1).join(":");
+  if (!Object.prototype.hasOwnProperty.call(MENU, type)) {
+    return null;
+  }
+  for (const group of MENU[type]) {
+    for (const item of group.items) {
+      if (item.name === name) {
+        return item;
+      }
+    }
+  }
+  return null;
+}
+
+function saveCart() {
+  if (cart.size === 0) {
+    storageRemove("local", CART_KEY);
+    return;
+  }
+  const saved = [];
+  cart.forEach(function (line, id) {
+    saved.push({ id: id, qty: line.qty });
+  });
+  storageSet("local", CART_KEY, JSON.stringify(saved));
+}
+
+function loadCart() {
+  const raw = storageGet("local", CART_KEY);
+  if (!raw) {
+    return;
+  }
+  let saved;
+  try {
+    saved = JSON.parse(raw);
+  } catch (e) {
+    storageRemove("local", CART_KEY); // 깨진 데이터는 버립니다.
+    return;
+  }
+  if (!Array.isArray(saved)) {
+    storageRemove("local", CART_KEY);
+    return;
+  }
+  saved.forEach(function (entry) {
+    if (!entry || typeof entry.id !== "string" || !Number.isInteger(entry.qty) || entry.qty < 1) {
+      return;
+    }
+    const item = findMenuItem(entry.id);
+    if (!item || item.soldOut) {
+      return; // 없어졌거나 품절된 메뉴는 빼고 불러옵니다.
+    }
+    cart.set(entry.id, { name: item.name, price: item.price, qty: Math.min(entry.qty, MAX_QTY) });
+  });
 }
 
 /* ───────── 주문 창 ───────── */
@@ -265,3 +389,5 @@ document.getElementById("cart-open").addEventListener("click", function () {
 document.getElementById("table-info").textContent = TABLE_LABEL;
 makeStars();
 renderMenu();
+loadCart(); // 새로고침 전에 담아 둔 메뉴를 되살립니다.
+updateCartBar();
