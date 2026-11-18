@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>달빛카페</title>
-    <link rel="stylesheet" href="style.css?v=20261118-3">
+    <link rel="stylesheet" href="style.css?v=20261118-4">
 </head>
 <body>
     <!-- 아이콘 모음: 연잎, 연꽃 (색은 글자색을 따라가요) -->
@@ -175,19 +175,22 @@
             <p class="table-info" id="table-info"></p>
         </div>
 
-        <nav class="tabs" role="tablist" aria-label="메뉴 종류">
-            <button class="tab active" role="tab" aria-selected="true" data-type="drinks"><svg class="icon" aria-hidden="true"><use href="#icon-leaf"/></svg>음료</button>
-            <button class="tab" role="tab" aria-selected="false" data-type="desserts"><svg class="icon" aria-hidden="true"><use href="#icon-leaf"/></svg>디저트</button>
-            <button class="tab minor" role="tab" aria-selected="false" data-type="traditional"><svg class="icon" aria-hidden="true"><use href="#icon-leaf"/></svg>전통</button>
-        </nav>
+        <div class="tabs" role="group" aria-label="메뉴 종류">
+            <button type="button" class="tab active" aria-pressed="true" data-type="drinks"><svg class="icon" aria-hidden="true"><use href="#icon-leaf"/></svg>음료</button>
+            <button type="button" class="tab" aria-pressed="false" data-type="desserts"><svg class="icon" aria-hidden="true"><use href="#icon-leaf"/></svg>디저트</button>
+            <button type="button" class="tab minor" aria-pressed="false" data-type="traditional"><svg class="icon" aria-hidden="true"><use href="#icon-leaf"/></svg>전통</button>
+        </div>
 
-        <main id="menu" aria-live="polite"></main>
+        <main id="menu"></main>
     </section>
 
     <footer class="site-footer">
         <p>달빛카페 · 시연용 예시 메뉴입니다</p>
         <p>최종 수정일: 2026-11-18</p>
     </footer>
+
+    <!-- 스크린리더용 안내: 탭을 바꾸거나 메뉴를 담았을 때 짧게 알려줍니다. -->
+    <p class="visually-hidden" id="status" role="status"></p>
 
     <div class="cart-bar" id="cart-bar" hidden>
         <p class="cart-summary"><span id="cart-count">0</span>개 담음 · 합계 <strong id="cart-total">0원</strong></p>
@@ -198,7 +201,7 @@
         <div id="order-body"></div>
     </dialog>
 
-    <script src="menu.js?v=20261118-3"></script>
-    <script src="script.js?v=20261118-3"></script>
+    <script src="menu.js?v=20261118-4"></script>
+    <script src="script.js?v=20261118-4"></script>
 </body>
 </html>

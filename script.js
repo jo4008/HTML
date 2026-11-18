@@ -67,8 +67,10 @@ const cartCountEl = document.getElementById("cart-count");
 const cartTotalEl = document.getElementById("cart-total");
 const dialogEl = document.getElementById("order-dialog");
 const orderBody = document.getElementById("order-body");
+const statusEl = document.getElementById("status");
 
 let currentType = "drinks";
+let announceToggle = false;
 const cart = new Map(); // id -> { name, price, qty }
 
 /* ───────── 도우미 ───────── */
@@ -93,6 +95,12 @@ function icon(id) {
   use.setAttribute("href", "#" + id);
   svg.appendChild(use);
   return svg;
+}
+
+// 스크린리더 사용자에게 짧게 알려 줍니다. (같은 문장을 연달아 말해도 다시 읽히도록 보이지 않는 글자를 번갈아 붙임)
+function announce(message) {
+  announceToggle = !announceToggle;
+  statusEl.textContent = message + (announceToggle ? "​" : "");
 }
 
 function formatPrice(price) {
@@ -157,6 +165,8 @@ function createItem(type, item) {
   } else {
     addBtn.addEventListener("click", function () {
       addToCart(type + ":" + item.name, item);
+      const totals = cartTotals();
+      announce(item.name + " 담았어요. 담은 메뉴 " + totals.count + "개, 합계 " + formatPrice(totals.total));
       addBtn.textContent = "담김 ✓";
       addBtn.classList.add("added");
       setTimeout(function () {
@@ -201,9 +211,10 @@ tabEls.forEach(function (tab) {
     tabEls.forEach(function (t) {
       const active = t === tab;
       t.classList.toggle("active", active);
-      t.setAttribute("aria-selected", String(active));
+      t.setAttribute("aria-pressed", String(active));
     });
     renderMenu();
+    announce(tab.textContent + " 메뉴 " + menuEl.querySelectorAll(".item").length + "개");
   });
 });
 
@@ -378,6 +389,7 @@ function submitOrder() {
   orderBody.replaceChildren(wrap);
   cart.clear();
   updateCartBar();
+  announce("주문이 접수되었어요. " + TABLE_LABEL);
 }
 
 document.getElementById("cart-open").addEventListener("click", function () {
