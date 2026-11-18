@@ -518,6 +518,26 @@ button:focus-visible {
 .badge.hot { color: #ffb4a6; background-color: rgba(255, 120, 100, 0.18); }
 .badge.iced { color: #a9d8ff; background-color: rgba(110, 180, 255, 0.18); }
 .badge.signature { color: var(--sky-top); background-color: var(--gold); }
+.badge.recommended { color: #bfe9dc; background-color: rgba(95, 174, 152, 0.25); }
+.badge.soldout { color: var(--cream); background-color: rgba(169, 182, 216, 0.28); }
+
+/* 품절 메뉴: 흐리게, 가격에 줄, 담기 버튼 막기 */
+.item.sold-out .item-name,
+.item.sold-out .item-desc,
+.item.sold-out .item-price {
+  opacity: 0.5;
+}
+
+.item.sold-out .item-price {
+  text-decoration: line-through;
+}
+
+.add-btn:disabled {
+  color: var(--muted);
+  background-color: transparent;
+  border: 1px solid var(--panel-line);
+  cursor: not-allowed;
+}
 
 /* ───────── 장바구니 바 ───────── */
 .cart-bar {

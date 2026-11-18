@@ -1,5 +1,12 @@
 // 달빛카페 메뉴 데이터 (예시)
 // 메뉴를 추가하거나 바꾸려면 이 파일만 수정하면 됩니다.
+//
+// 메뉴 한 줄에 쓸 수 있는 값
+//   name: 이름 / price: 가격(숫자) / desc: 설명
+//   temp: ["HOT", "ICED"]  온도 표시 (디저트는 생략)
+//   signature: true  "시그니처" 표시
+//   recommended: true  "추천" 표시
+//   soldOut: true  "품절" 표시 (흐리게 보이고 담을 수 없음)
 const MENU = {
   drinks: [
     {
@@ -8,7 +15,7 @@ const MENU = {
         { name: "에스프레소", price: 3000, temp: ["HOT"], desc: "진하게 추출한 기본 에스프레소" },
         { name: "아메리카노", price: 3500, temp: ["HOT", "ICED"], desc: "깔끔하고 고소한 기본 커피" },
         { name: "카페라떼", price: 4200, temp: ["HOT", "ICED"], desc: "에스프레소에 부드러운 우유를 더했어요" },
-        { name: "바닐라라떼", price: 4800, temp: ["HOT", "ICED"], desc: "바닐라 시럽을 더한 달콤한 라떼" },
+        { name: "바닐라라떼", price: 4800, temp: ["HOT", "ICED"], desc: "바닐라 시럽을 더한 달콤한 라떼", recommended: true },
         { name: "카라멜 마키아토", price: 5000, temp: ["HOT", "ICED"], desc: "카라멜 소스를 올린 달콤한 커피" },
         { name: "달빛라떼", price: 5300, temp: ["HOT", "ICED"], desc: "시그니처. 은은한 크림과 흑설탕을 넣은 라떼", signature: true }
       ]
@@ -39,8 +46,8 @@ const MENU = {
         { name: "생크림 케이크", price: 6500, desc: "부드러운 생크림을 올린 기본 케이크" },
         { name: "초코 케이크", price: 6800, desc: "진한 초콜릿 시트와 가나슈" },
         { name: "치즈 케이크", price: 6800, desc: "꾸덕하고 진한 크림치즈 케이크" },
-        { name: "티라미수", price: 7000, desc: "마스카포네와 커피 시럽을 적신 시트" },
-        { name: "당근 케이크", price: 6800, desc: "향긋한 계피와 호두가 들어 있어요" }
+        { name: "티라미수", price: 7000, desc: "마스카포네와 커피 시럽을 적신 시트", recommended: true },
+        { name: "당근 케이크", price: 6800, desc: "향긋한 계피와 호두가 들어 있어요", soldOut: true }
       ]
     },
     {
@@ -68,7 +75,7 @@ const MENU = {
       category: "전통 차와 음료",
       minor: true,
       items: [
-        { name: "쌍화차", price: 6000, temp: ["HOT"], desc: "한약재 향이 은은하고 견과류를 띄운 따뜻한 차" },
+        { name: "쌍화차", price: 6000, temp: ["HOT"], desc: "한약재 향이 은은하고 견과류를 띄운 따뜻한 차", recommended: true },
         { name: "대추차", price: 5000, temp: ["HOT"], desc: "달콤하고 진한 대추 향" },
         { name: "오미자차", price: 5500, temp: ["HOT", "ICED"], desc: "다섯 가지 맛이 나는 붉은 차" },
         { name: "수정과", price: 5000, temp: ["ICED"], desc: "계피와 생강 향에 곶감을 띄웠어요" },

@@ -70,12 +70,18 @@ function makeStars() {
 
 /* ───────── 메뉴 그리기 ───────── */
 function createItem(type, item) {
-  const li = el("li", "item");
+  const li = el("li", "item" + (item.soldOut ? " sold-out" : ""));
 
   const top = el("div", "item-top");
   top.appendChild(el("span", "item-name", item.name));
   if (item.signature) {
     top.appendChild(el("span", "badge signature", "시그니처"));
+  }
+  if (item.recommended) {
+    top.appendChild(el("span", "badge recommended", "추천"));
+  }
+  if (item.soldOut) {
+    top.appendChild(el("span", "badge soldout", "품절"));
   }
   (item.temp || []).forEach(function (t) {
     top.appendChild(el("span", "badge " + t.toLowerCase(), t));
@@ -86,17 +92,22 @@ function createItem(type, item) {
   top.appendChild(el("span", "item-price", formatPrice(item.price)));
 
   const buy = el("div", "item-buy");
-  const addBtn = el("button", "add-btn", "담기");
+  const addBtn = el("button", "add-btn", item.soldOut ? "품절" : "담기");
   addBtn.type = "button";
-  addBtn.addEventListener("click", function () {
-    addToCart(type + ":" + item.name, item);
-    addBtn.textContent = "담김 ✓";
-    addBtn.classList.add("added");
-    setTimeout(function () {
-      addBtn.textContent = "담기";
-      addBtn.classList.remove("added");
-    }, 900);
-  });
+  if (item.soldOut) {
+    // 품절 메뉴는 담을 수 없습니다.
+    addBtn.disabled = true;
+  } else {
+    addBtn.addEventListener("click", function () {
+      addToCart(type + ":" + item.name, item);
+      addBtn.textContent = "담김 ✓";
+      addBtn.classList.add("added");
+      setTimeout(function () {
+        addBtn.textContent = "담기";
+        addBtn.classList.remove("added");
+      }, 900);
+    });
+  }
   buy.appendChild(addBtn);
 
   li.appendChild(top);
